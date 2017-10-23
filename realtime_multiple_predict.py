@@ -17,7 +17,8 @@ import time
 import cv2
 import tensorflow as tf
 
-CLASSES = ["A", "B"]
+CLASSES = ['A','B','C','D','E','F','G','H','I','K','L','M','N','O',
+    'P','Q','R','S','T','U']
 COLORS = np.random.uniform(0, 255, size=(len(CLASSES), 3))
 
 
@@ -40,7 +41,7 @@ y_pred = graph.get_tensor_by_name("y_pred:0")
 ## Let's feed the images to the input placeholders
 x= graph.get_tensor_by_name("x:0") 
 y_true = graph.get_tensor_by_name("y_true:0") 
-y_test_images = np.zeros((1, 2)) 
+y_test_images = np.zeros((1, (len(CLASSES)))) 
 
 # inicializamos el streaming de video, y le permitimos al sensor de la
 # camara que se prepare e incialize el contador FPS
@@ -114,7 +115,7 @@ while True:
     ## Let's feed the images to the input placeholders
     x= graph.get_tensor_by_name("x:0") 
     y_true = graph.get_tensor_by_name("y_true:0") 
-    y_test_images = np.zeros((1, 2)) 
+    y_test_images = np.zeros((1, (len(CLASSES)))) 
     
     ### Creating the feed_dict that is required to be fed to calculate y_pred 
     feed_dict_testing = {x: x_batch, y_true: y_test_images}
@@ -122,14 +123,14 @@ while True:
     # result is of this format [probabiliy_of_rose probability_of_sunflower]
     #print("A: " + str(result[0][0]))
     #print("B: " + str(result[0][1])
+
+    index_max = np.argmax(result[0][:])
+        
+    label_prediction = "{}: {:.2f}%".format(CLASSES[index_max],
+				result[0][index_max])
     
-    labelA = "{}: {:.2f}%".format(CLASSES[0],
-				result[0][0])
     
-    labelB = "{}: {:.2f}%".format(CLASSES[1],
-				result[0][1])
-    
-    cv2.putText(frame, "A: " + labelA + " - B: " + labelB, (50, 50),
+    cv2.putText(frame, label_prediction, (50, 50),
 				cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLORS[0], 2)
 
     # mostramos los frames de salida
